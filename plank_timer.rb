@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+require 'find'
 
 class Timer < Struct.new(:start_at)
   def self.start()
@@ -150,7 +151,17 @@ SPEECH_TIMINGS = {
   340 => 'トレーニング終了です。お疲れ様でした。',
 }
 
+REG_AUDIO_EXT = %r!\.(mp3|wav)$!
+def load_yells
+  out = []
+  Find.find("yell") do |file|
+    out.push(file) if REG_AUDIO_EXT =~ file
+  end
+  out
+end
+
 def main
+  yells = load_yells
   say('プランクトレーニングをはじめます')
 
   sleep(3)
@@ -167,6 +178,7 @@ def main
   say('1')
   pre_timer.sleep_until(5)
 
+  last_yelled_at = nil
   timer = Timer.start
   say('フルプランク スタート')
   (1..345).each {|i|
@@ -174,6 +186,9 @@ def main
     speech = SPEECH_TIMINGS[i]
     if (speech)
       say(speech)
+    elsif yells.size > 0 && (!last_yelled_at || last_yelled_at < i - 5) && rand(5) == 0
+      yell(yells.shuffle.first)
+      last_yelled_at = i
     end
   }
 end
@@ -183,6 +198,14 @@ def say(word)
     puts(word)
     system('say', word)
   }.run
+end
+
+def yell(file)
+  if File.exists?(file)
+    Thread.new {
+      system('afplay', file)
+    }.run
+  end
 end
 
 case $PROGRAM_NAME
