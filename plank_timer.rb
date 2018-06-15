@@ -186,7 +186,9 @@ def main
     speech = SPEECH_TIMINGS[i]
     if (speech)
       say(speech)
-    elsif yells.size > 0 && (!last_yelled_at || last_yelled_at < i - 5) && rand(5) == 0
+    end
+
+    if yells.size > 0 && (!last_yelled_at || last_yelled_at < i - 2) && rand(3) == 0
       yell(yells.shuffle.first)
       last_yelled_at = i
     end
@@ -203,7 +205,7 @@ end
 def yell(file)
   if File.exists?(file)
     Thread.new {
-      system('afplay', file)
+      system('afplay', '-v', '0.5', file)
     }.run
   end
 end
