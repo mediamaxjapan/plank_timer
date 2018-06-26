@@ -18,7 +18,7 @@ class Timer < Struct.new(:start_at)
 end
 
 def sec_of(set, sec_of_set)
-  (set - 1) * 40 + sec_of_set
+  (set - 1) * 60 + sec_of_set
 end
 
 SPEECH_TIMINGS = {
