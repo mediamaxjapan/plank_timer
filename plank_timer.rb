@@ -166,8 +166,8 @@ end
 
 def main
   yells = load_yells
-  say('プランクトレーニングをはじめます')
 
+  say1('プランクトレーニングをはじめます')
   sleep(10)
 
   pre_timer = Timer.start
@@ -184,12 +184,15 @@ def main
 
   last_yelled_at = nil
   timer = Timer.start
-  say('フルプランク スタート')
+  say1('フルプランク スタート')
+  whoSay = 0
   (1..345).each {|i|
     timer.sleep_until(i)
     speech = SPEECH_TIMINGS[i]
     if (speech)
-      say(speech)
+      if whoSay % 2 == 0 then say(speech)
+      else say1(speech) end
+      whoSay += 1 
     end
 
     if yells.size > 0 && (!last_yelled_at || last_yelled_at < i - 2) && rand(2) == 0
@@ -202,7 +205,14 @@ end
 def say(word)
   Thread.new {
     puts(word)
-    system('say', word)
+    system('say', '-v', 'kyoko', word)
+  }.run
+end
+
+def say1(word)
+  Thread.new {
+    puts(word)
+    system('say', '-v', 'otoya', word)
   }.run
 end
 
